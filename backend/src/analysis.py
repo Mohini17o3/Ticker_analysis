@@ -1,4 +1,4 @@
-from openai import OpenAI
+# from openai import OpenAI
 from dotenv import load_dotenv
 import openai
 import os
@@ -6,20 +6,21 @@ import os
 load_dotenv('.env.local')
 api_key = os.getenv('OPENAI_API_KEY')
 
-openai.api_key = api_key
+openai.api_key_path = api_key
 
-def analyze_text(text):
-    # Call the OpenAI API to analyze the provided text
-    response = openai.Completion.create(
-        engine="text-davinci-002",
-        prompt=text,
-        max_tokens=100
+def analyze_text(text_to_analyze):
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant and you give answers in a list. People generally ask about text and books."},
+            {"role": "user", "content": "Now, about this following text: " + text_to_analyze}
+        ]
     )
+    analysis = response['choices'][0]['message']['content']
+    return analysis
 
-    # Process the response and extract insights
-    insight = response.choices[0].text.strip()
-
-    return insight
+ 
 
 
 def read_text_from_files(root_dir):
